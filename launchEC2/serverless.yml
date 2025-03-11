@@ -1,0 +1,65 @@
+service: launchEC2
+
+custom:
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-west-2'}
+  subnetIds:
+    - ${ssm:/deployment/${self:custom.stage}/PrivateSubnetIdA}
+    - ${ssm:/deployment/${self:custom.stage}/PrivateSubnetIdB}
+  securityGroupId: ${ssm:/deployment/${self:custom.stage}/PrivateSubnetsSGId}
+  ec2type: t3.micro
+  ec2ami: ami-08ec94f928cf25a9d # 
+  timeout: 600 # On average it takes less than 5 minutes to launch a t3.micro
+  keyPairName: launchEC2-keypair-${self:custom.stage} # Allow ssh access for troubleshooting
+
+provider:
+  name: aws
+  stage: ${self:custom.stage}
+  region: ${self:custom.region}
+  runtime: nodejs18.x
+  architecture: x86_64 # matches ec2 ami architecture
+  timeout: ${self:custom.timeout}
+  vpc:
+    subnetIds:
+      - ${self:custom.subnetIds.0}
+      - ${self:custom.subnetIds.1}
+    securityGroupIds:
+      - ${self:custom.securityGroupId}
+  iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - iam:PassRole
+          - ec2:RunInstances
+          - ec2:DescribeInstances
+          - ec2:TerminateInstances
+          - ec2:DescribeInstanceStatus
+          - ec2:CreateTags
+# are these needed ?
+          - ec2:CreateKeyPair
+          - ec2:DescribeKeyPairs
+          - ec2:DeleteKeyPair
+          - s3:ListBucket
+          - s3:GetObject
+          - s3:PutObject
+        Resource: '*'
+    # Additonal permissions are included by AWSLambdaVPCAccessExecutionRole,
+    # which is automatically attached when a lambda is placed in a vpc.
+
+functions:
+  launchEC2:
+    handler: launchEC2.launchEC2
+    environment:
+      STAGE: ${self:custom.stage}
+      REGION: ${self:custom.region}
+      SUBNET_IDS: ${self:custom.subnetIds.0},${self:custom.subnetIds.1}
+      SECURITY_GROUP_ID: ${self:custom.securityGroupId}
+      EC2_TYPE: ${self:custom.ec2type}
+      EC2_AMI: ${self:custom.ec2ami}
+      KEYPAIR_NAME: ${self:custom.keyPairName}
+
+package:
+  exclude:
+    - ./*
+  include:
+    - launchEC2.js
+    - node_modules/**

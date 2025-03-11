@@ -1,0 +1,14 @@
+{
+  "name": "launchEC2.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "launchEC2.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.683.0",
+    "performance-now": "^2.1.0"
+  }
+}

@@ -1,0 +1,52 @@
+service: s3unzip
+  
+custom:
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-west-2'}
+  subnetIds:
+    - ${ssm:/deployment/${self:custom.stage}/PrivateSubnetIdA}
+    - ${ssm:/deployment/${self:custom.stage}/PrivateSubnetIdB}
+  securityGroupId: ${ssm:/deployment/${self:custom.stage}/PrivateSubnetsSGId}
+  timeout: 900   # Includes processing time, and time to invoke launchEC2
+  earlyStop: 600 # Allow ample time to invoke launchEC2 if needed
+  s3unzipBucket: s3unzip-${self:custom.stage}
+
+provider:
+  name: aws
+  region: ${self:custom.region}
+  runtime: nodejs18.x
+  timeout: ${self:custom.timeout}
+  vpc:
+    subnetIds:
+      - ${self:custom.subnetIds.0}
+      - ${self:custom.subnetIds.1}
+    securityGroupIds:
+      - ${self:custom.securityGroupId}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - arn:aws:s3:::${self:custom.s3unzipBucket}
+        - arn:aws:s3:::${self:custom.s3unzipBucket}/*    
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'
+      
+functions:
+  s3unzip:
+    handler: s3unzip.s3unzip
+    environment:
+      STAGE: ${self:custom.stage}
+      EARLY_STOP: ${self:custom.earlyStop}
+      S3UNZIP_BUCKET: ${self:custom.s3unzipBucket}
+
+package:
+  exclude:
+    - ./*
+  include:
+    - s3unzip.js
+    - node_modules/**

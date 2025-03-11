@@ -1,0 +1,21 @@
+Description: Allows EC2 instances to call AWS services on your behalf.
+
+Max session duration: 2 hours
+
+Permissions policies:
+    LaunchEC2Policy
+    s3unzipPolicy
+
+Trust relationships:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
