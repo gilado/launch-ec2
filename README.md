@@ -1,5 +1,5 @@
 # launch-ec2
-use lambda to create an ec2 and execute code in the ec2, then terminate the ec2
+Use lambda to create an ec2 and execute code in the ec2, then terminate the ec2.
 
 The samples in this repository are written in nodejs (javascript) and use 
 serverless framework for deployment.
