@@ -160,7 +160,7 @@ async function launchEC2 (event) {
 `#!/bin/bash
 sudo yum update -y
 sudo yum install -y nodejs
-aws s3 cp s3://launchec2-${STAGE}/s3unzip.zip .
+aws s3 cp s3://${bucketName}/s3unzip.zip .
 unzip s3unzip.zip
 node s3unzip.js ${bucketName} ${zipFileName}
 `;
@@ -188,7 +188,7 @@ node s3unzip.js ${bucketName} ${zipFileName}
 
 /* EC2 entry point
  * Example command line
- * node s3unzip.js s3unzip GPD_Images_10-14-24_20241015_063135.zip
+ * node s3unzip.js s3unzip file_to_be_unzipped.zip
  */
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
   console.log("process.argv.length " + process.argv.length);
