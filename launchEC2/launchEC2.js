@@ -121,7 +121,7 @@ const waitForInstanceRunning = async (instance) => {
   return ok;
 };
 
-// Waits for an EC2 instance to be readyi for use, and returns itrue. 
+// Waits for an EC2 instance to be ready for use, and returns itrue. 
 // If the instance does not become ready, returns false.
 const waitForInstanceReady = async (instance) => {
   console.log("Waiting for instance " + instance.id + " to be ready...");
