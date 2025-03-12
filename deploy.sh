@@ -11,13 +11,11 @@ GITUSERNAME="deployment"
 GITUSEREMAIL="deployment@example.org"
 GITACCESSTOKEN="<access token>"
 
-
 # Credentials for deployment AWS account  
 AWS_ACCESS_KEY_ID="<aws_access_key_id>"
 AWS_SECRET_ACCESS_KEY_ID="<aws_secret_access_key_id>"
 AWS_REGION="<region>" # e.g. us-west-2
 STAGE="dev" # dev staging or prod
-
 
 sudo yum update -y
 sudo yum install nodejs npm
@@ -76,5 +74,4 @@ rm -rf ${REPOSITORY_NAME}
 rm -rf ~/aws
 rm -f ~/.gitconfig
 rm -f ~/.git-credentials
-
 
